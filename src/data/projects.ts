@@ -6,5 +6,5 @@ export const projects: Project[] = [
   { id:'dictly', name:'Dictly', label:'Language learning', description:'A focused dictation practice app built around deliberate listening.', status:'building', year:'2026', href:'https://dictly.phongtran.tech' },
   { id:'metamorph', name:'MetaMorph', label:'PDF utility', description:'A lightweight way to view and edit PDF metadata without the clutter.', status:'experiment', year:'2026', href:'https://metamorph.phongtran.tech' },
   { id:'webgis', name:'WebGIS', label:'Spatial interface', description:'Experiments in interactive mapping, spatial data and 3D interfaces.', status:'experiment', year:'2026' },
-  { id:'next', name:'Untitled 005', label:'Next problem', description:'Another small problem waiting for a useful solution.', status:'coming-soon', year:'Soon' }
+  { id:'feno', name:'FENO', label:'Working title', description:'A new problem, a rough idea and a name for now. Still figuring out what it wants to become.', status:'coming-soon', year:'Next' }
 ]
