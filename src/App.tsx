@@ -2,42 +2,49 @@ import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTrans
 import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import { ProjectIndex } from './components/ProjectIndex'
 import Blog from './pages/Blog'
+import BlogPost from './pages/BlogPost'
 import './styles/global.css'
 
 const ease=[.16,1,.3,1] as const
 
-function CosmicCore(){
+function FoldSymbol(){
   const mx=useMotionValue(0), my=useMotionValue(0)
-  const sx=useSpring(mx,{stiffness:70,damping:17}), sy=useSpring(my,{stiffness:70,damping:17})
-  const rx=useTransform(sy,[-.5,.5],[9,-9]); const ry=useTransform(sx,[-.5,.5],[-12,12])
+  const sx=useSpring(mx,{stiffness:70,damping:18}), sy=useSpring(my,{stiffness:70,damping:18})
+  const rx=useTransform(sy,[-.5,.5],[7,-7]); const ry=useTransform(sx,[-.5,.5],[-9,9])
 
-  return <motion.div className="cosmos" onPointerMove={(e)=>{const r=e.currentTarget.getBoundingClientRect();mx.set((e.clientX-r.left)/r.width-.5);my.set((e.clientY-r.top)/r.height-.5)}} onPointerLeave={()=>{mx.set(0);my.set(0)}}>
-    <motion.div className="cosmos-stage" style={{rotateX:rx,rotateY:ry}}>
-      <motion.div className="planet" animate={{rotate:[0,360]}} transition={{duration:26,repeat:Infinity,ease:'linear'}}><div className="planet-core"/><div className="planet-light"/></motion.div>
-      <motion.div className="orbit orbit-a" animate={{rotateZ:[18,378]}} transition={{duration:22,repeat:Infinity,ease:'linear'}}><i/></motion.div>
-      <motion.div className="orbit orbit-b" animate={{rotateZ:[-32,-392]}} transition={{duration:31,repeat:Infinity,ease:'linear'}}><i/></motion.div>
-      <motion.div className="orbit orbit-c" animate={{rotateZ:[72,432]}} transition={{duration:18,repeat:Infinity,ease:'linear'}}><i/></motion.div>
-      <motion.div className="data-card data-a" animate={{y:[0,-12,0]}} transition={{duration:5.5,repeat:Infinity,ease:'easeInOut'}}><span>DESIGN</span><b>01</b></motion.div>
-      <motion.div className="data-card data-b" animate={{y:[0,10,0]}} transition={{duration:6.5,repeat:Infinity,ease:'easeInOut'}}><span>AUTOMATE</span><b>03</b></motion.div>
-      <div className="coordinate x"/><div className="coordinate y"/>
+  return <motion.div className="fold-wrap" onPointerMove={(e)=>{const r=e.currentTarget.getBoundingClientRect();mx.set((e.clientX-r.left)/r.width-.5);my.set((e.clientY-r.top)/r.height-.5)}} onPointerLeave={()=>{mx.set(0);my.set(0)}}>
+    <motion.div className="fold-object" style={{rotateX:rx,rotateY:ry}}>
+      <div className="fold-plane plane-a"><span>PAGE</span></div>
+      <div className="fold-plane plane-b"><span>SYSTEM</span></div>
+      <div className="fold-seam"/>
+      <motion.div className="signal" animate={{offsetDistance:['0%','100%']}} transition={{duration:4.8,repeat:Infinity,ease:'linear'}}/>
     </motion.div>
+    <div className="fold-caption"><span>FROM PAGE</span><i>→</i><span>TO SYSTEM</span></div>
   </motion.div>
 }
 
 function ProcessLoop(){
   const steps=['Design','Build','Automate','Learn','Repeat']
   return <section className="process-loop">
-    <div className="process-caption"><span>MY WORKING LOOP</span><p>Not a straight line. More like an orbit.</p></div>
-    <div className="process-track">
-      <motion.div className="process-pulse" animate={{left:['0%','100%']}} transition={{duration:7,repeat:Infinity,ease:'linear'}}/>
-      {steps.map((s,i)=><div className="process-step" key={s}><span>{String(i+1).padStart(2,'0')}</span><strong>{s}</strong></div>)}
+    <div className="loop-copy"><span className="story-kicker">MY WORKING LOOP</span><h2>Make. Test.<br/><em>Come back smarter.</em></h2><p>It is actually a loop this time.</p></div>
+    <div className="loop-diagram">
+      <svg viewBox="0 0 500 500" aria-hidden>
+        <circle cx="250" cy="250" r="175" className="loop-ring"/>
+        <motion.circle cx="250" cy="75" r="8" className="loop-pulse" animate={{rotate:[0,360]}} transition={{duration:8,repeat:Infinity,ease:'linear'}} style={{transformOrigin:'250px 250px'}}/>
+      </svg>
+      {steps.map((s,i)=>{
+        const angle=(-90+i*(360/steps.length))*Math.PI/180
+        const x=50+35*Math.cos(angle), y=50+35*Math.sin(angle)
+        return <div className="loop-node" key={s} style={{left:`${x}%`,top:`${y}%`}}><span>{String(i+1).padStart(2,'0')}</span><strong>{s}</strong></div>
+      })}
+      <div className="loop-center"><span>∞</span><small>repeat</small></div>
     </div>
   </section>
 }
 
 function Home(){
   const {scrollYProgress}=useScroll()
-  const heroY=useTransform(scrollYProgress,[0,.28],[0,-80])
+  const heroY=useTransform(scrollYProgress,[0,.28],[0,-70])
   return <main>
     <header className="nav">
       <a className="brand" href="#top">PHONG TRAN</a>
@@ -46,13 +53,13 @@ function Home(){
     </header>
 
     <section className="hero" id="top">
-      <div className="hero-grid"/><div className="hero-glow g1"/><div className="hero-glow g2"/>
+      <div className="hero-grid"/>
       <motion.div className="hero-copy" style={{y:heroY}}>
         <div className="eyebrow"><span className="live-dot"/> GRAPHIC DESIGNER → BUILDER</div>
         <motion.h1 initial={{opacity:0,y:42}} animate={{opacity:1,y:0}} transition={{duration:1,ease}}>Curious by<br/>nature. <em>Useful</em><br/>by design.</motion.h1>
-        <div className="hero-bottom"><p>A curious designer learning to code, automating the boring parts, and keeping the human parts human.</p><span className="scroll-cue">Scroll / explore ↓</span></div>
+        <div className="hero-bottom"><p>A designer who likes craft, learns code, and lets machines handle the boring parts.</p><span className="scroll-cue">Scroll / explore ↓</span></div>
       </motion.div>
-      <CosmicCore/>
+      <FoldSymbol/>
     </section>
 
     <ProcessLoop/>
@@ -71,7 +78,7 @@ function Home(){
     </section>
 
     <section className="manifesto">
-      <div className="section-head"><span>VERY SERIOUS METRICS</span><p>Some numbers are useful. Some are just more fun.</p></div>
+      <div className="section-head"><span>VERY SERIOUS METRICS</span><p>Some numbers are useful. Some are more fun.</p></div>
       <div className="fun-stats">
         <div><strong>∞</strong><span>Problems left to simplify</span></div>
         <div><strong>0%</strong><span>Love for repetitive manual work</span></div>
@@ -82,7 +89,7 @@ function Home(){
 
     <section className="blog-tease">
       <span className="story-kicker">BLOG / NOTEBOOK</span>
-      <div><h2>Not everything needs<br/>to become a <em>case study.</em></h2><p>Some things are better as notes: what I learned, what went wrong, what I am thinking about and the occasional life story.</p><Link to="/blog">Enter the blog →</Link></div>
+      <div><h2>Not everything needs<br/>to become a <em>case study.</em></h2><div><p>Some things are better as notes: what I learned, what went wrong, what I am thinking about and the occasional life story.</p><Link to="/blog">Enter the blog →</Link></div></div>
     </section>
 
     <section className="contact" id="contact">
@@ -103,7 +110,11 @@ function PageShell(){
   const location=useLocation()
   return <AnimatePresence mode="wait" initial={false}>
     <motion.div key={location.pathname} initial={{opacity:0,y:18,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} exit={{opacity:0,y:-12,filter:'blur(6px)'}} transition={{duration:.65,ease}}>
-      <Routes location={location}><Route path="/" element={<Home/>}/><Route path="/blog" element={<Blog/>}/></Routes>
+      <Routes location={location}>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/blog" element={<Blog/>}/>
+        <Route path="/blog/:slug" element={<BlogPost/>}/>
+      </Routes>
     </motion.div>
   </AnimatePresence>
 }
