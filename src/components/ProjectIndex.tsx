@@ -1,42 +1,51 @@
-import { AnimatePresence, motion } from 'motion/react'
-import { useState } from 'react'
+import { motion } from 'motion/react'
+import { useRef, useState } from 'react'
 import { projects } from '../data/projects'
 
 const statusLabel = { live:'Live', building:'Building', experiment:'Experiment', 'coming-soon':'Coming soon' }
 
-function PreviewVisual({id}:{id:string}){
-  if(id==='plotflow') return <div className="visual plotflow-ui"><div className="pf-top"><span>PLOTFLOW</span><i/></div><div className="pf-canvas"><div className="pf-sheet"/><div className="pf-pin p1">1</div><div className="pf-pin p2">2</div><div className="pf-side"><span/><span/><span/><span/></div></div></div>
-  if(id==='dictly') return <div className="visual dictly-ui"><div className="dict-word">listen</div><div className="dict-wave">{Array.from({length:18}).map((_,i)=><i key={i} style={{height:`${18+(i%5)*10}px`}}/>)}</div><div className="dict-input">Type what you hear<span>|</span></div><div className="dict-score"><b>14</b><small>/ 15</small></div></div>
-  if(id==='metamorph') return <div className="visual meta-ui"><div className="meta-doc"><span>PDF</span><b>Metadata</b><small>Title<br/>Author<br/>Keywords<br/>Created</small></div><div className="meta-panel"><i/><i/><i/><i/></div></div>
-  if(id==='webgis') return <div className="visual map-ui"><div className="map-grid"/><div className="map-road r-a"/><div className="map-road r-b"/><div className="map-node n1"/><div className="map-node n2"/><div className="map-node n3"/><span>WEBGIS / 3D</span></div>
-  return <div className="visual next-ui"><span>FENO</span><p>Working title.<br/>The idea comes next.</p></div>
+function ProjectArtwork({id}:{id:string}){
+  if(id==='plotflow') return <div className="work-art art-plotflow"><div className="blueprint"/><span className="art-code">A-12</span><i className="pin one">1</i><i className="pin two">2</i></div>
+  if(id==='dictly') return <div className="work-art art-dictly"><div className="wave">{Array.from({length:22}).map((_,i)=><i key={i} style={{height:`${12+(i%6)*9}px`}}/>)}</div><strong>listen.</strong><span>14 / 15</span></div>
+  if(id==='metamorph') return <div className="work-art art-meta"><div className="paper"><b>PDF</b><span>Title<br/>Author<br/>Keywords<br/>Created</span></div><div className="meta-chip">metadata.json</div></div>
+  if(id==='webgis') return <div className="work-art art-webgis"><div className="map-plane"/><i className="node n1"/><i className="node n2"/><i className="node n3"/><span>SPATIAL / 3D</span></div>
+  return <div className="work-art art-feno"><strong>FENO</strong><span>CODENAME / NEXT</span><div className="feno-orbit"/></div>
 }
 
 export function ProjectIndex(){
-  const [active,setActive] = useState(projects[0].id)
-  const current = projects.find(p=>p.id===active) ?? projects[0]
+  const scroller=useRef<HTMLDivElement>(null)
+  const [index,setIndex]=useState(0)
+
+  const go=(dir:number)=>{
+    const next=Math.max(0,Math.min(projects.length-1,index+dir))
+    setIndex(next)
+    const el=scroller.current?.children[next] as HTMLElement | undefined
+    el?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})
+  }
 
   return <section className="projects" id="work">
-    <div className="section-head"><span>SELECTED WORK / INDEX</span><p>Products, experiments and unfinished ideas.</p></div>
-    <div className="project-layout">
-      <div className="project-list">
-        {projects.map((p,i)=><a key={p.id} href={p.href || '#lab'} onMouseEnter={()=>setActive(p.id)} onFocus={()=>setActive(p.id)} className={`project-row ${active===p.id?'active':''}`}>
-          <span className="index">{String(i+1).padStart(2,'0')}</span>
-          <span className="p-name">{p.name}</span>
-          <span className="p-label">{p.label}</span>
-          <span className={`status ${p.status}`}>{statusLabel[p.status]}</span>
-          <span className="arrow">↗</span>
-        </a>)}
-      </div>
-      <div className="preview-wrap">
-        <AnimatePresence mode="wait">
-          <motion.div key={current.id} className={`preview ${current.id}`} initial={{opacity:0,y:22,scale:.975,filter:'blur(8px)'}} animate={{opacity:1,y:0,scale:1,filter:'blur(0px)'}} exit={{opacity:0,y:-16,scale:.985,filter:'blur(6px)'}} transition={{duration:.5,ease:[.16,1,.3,1]}}>
-            <div className="preview-top"><span>{current.name}</span><span>{current.year}</span></div>
-            <PreviewVisual id={current.id}/>
-            <div className="preview-copy"><p>{current.description}</p><span>{current.href?'Open project ↗':'Still becoming'}</span></div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
+    <div className="work-head">
+      <div><span className="story-kicker">SELECTED SOLUTIONS</span><h2>Problems first.<br/><em>Products second.</em></h2></div>
+      <div className="work-controls"><span>{String(index+1).padStart(2,'0')} / {String(projects.length).padStart(2,'0')}</span><button onClick={()=>go(-1)} aria-label="Previous project">←</button><button onClick={()=>go(1)} aria-label="Next project">→</button></div>
+    </div>
+
+    <div className="work-scroller" ref={scroller} onScroll={(e)=>{
+      const node=e.currentTarget
+      const cards=Array.from(node.children) as HTMLElement[]
+      let nearest=0, dist=Infinity
+      cards.forEach((c,i)=>{const d=Math.abs(c.offsetLeft-node.scrollLeft);if(d<dist){dist=d;nearest=i}})
+      setIndex(nearest)
+    }}>
+      {projects.map((p,i)=><motion.article className={`work-card ${p.id}`} key={p.id} initial={{opacity:0,y:50}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.25}} transition={{duration:.75,delay:i*.05,ease:[.16,1,.3,1]}}>
+        <div className="work-card-top"><span>{String(i+1).padStart(2,'0')}</span><span className={`status ${p.status}`}>{statusLabel[p.status]}</span></div>
+        <ProjectArtwork id={p.id}/>
+        <div className="work-card-copy">
+          <div className="work-title"><h3>{p.name}</h3><span>{p.industry}</span></div>
+          <div className="work-problem"><small>PROBLEM</small><p>{p.problem}</p></div>
+          <div className="work-solution"><small>SOLUTION</small><p>{p.solution}</p></div>
+          <button className="ghost-action" type="button">Case details ↗</button>
+        </div>
+      </motion.article>)}
     </div>
   </section>
 }
