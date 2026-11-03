@@ -4,6 +4,10 @@ import { ProjectIndex } from './components/ProjectIndex'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import './styles/global.css'
+import ComingSoon from './pages/ComingSoon'
+
+// Temporary launch gate: set to false to restore the complete portfolio and blog.
+const COMING_SOON_MODE = true
 
 const ease=[.16,1,.3,1] as const
 
@@ -119,4 +123,4 @@ function PageShell(){
   </AnimatePresence>
 }
 
-export default function App(){ return <PageShell/> }
+export default function App(){ return COMING_SOON_MODE ? <ComingSoon/> : <PageShell/> }
